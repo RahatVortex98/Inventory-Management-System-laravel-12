@@ -19,7 +19,37 @@ composer create-project laravel/laravel ims "^12.0"
 Starter kit(breeze):
 
 ```
- composer require laravel/breeze --dev
+composer require laravel/breeze --dev
 
-  php artisan breeze:install
+php artisan breeze:install
+```
+Role adding existing User table:
+
+Step 1: Make a command for that existing table
+```
+php artisan make:migration add_role_to_users_table --table=users  
+```
+Step 2: Add the column name to that new migration file
+
+```
+    public function up(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('role')->after('email')->default('user');
+        });
+    }
+
+    
+```
+Step 3: Just migrate them :
+```
+php artisan migrate
+```
+
+Separate Dashboard for Admin & User:
+
+Step 1: make view for admin
+
+```
+php artisan make:view admin.admin-dashboard
 ```
