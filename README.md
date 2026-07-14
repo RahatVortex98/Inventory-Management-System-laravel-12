@@ -144,6 +144,10 @@ step 1: making model and data table
 ```
 php artisan make:model Category -m
 ```
+after making table and model :
+```
+php artisan migrate
+```
 step 2: making controller for category creation :
 
 - 1. create() (or your current addCategory()) :
@@ -154,3 +158,43 @@ public function addCategory()
 }
 
 ```
+web.php:
+```
+Route::get('/add-category',[AdminDashboardController::class,'addCategory'])->name('addCategory');
+```
+- 2. store() (or your current storeCategory()):
+rules:
+ - There is no 'text' validation rule in Laravel.
+ - call it like this when a situation like this
+```
+'status' => $request->boolean('status'),
+```
+```
+    public function storeCategory(Request $request){
+
+        $request->validate([
+            'name'=> 'required|string|max:255',
+            'description'=>'nullable|string',
+            'status'=>'nullable|boolean',
+
+        ]);
+        Category::create([
+            'name'=>$request->name,
+            'description'=>$request->description,
+            'status'=>$request->boolean('status')
+        ]);
+        return redirect()->back()->with('message','New category added');
+}
+
+```
+- 3.fetch data(or show all data listOfCategory()):
+```
+public function listOfCategory(){
+        $categories= Category::all();
+        return view('admin.category.category-list',compact('categories'));
+    }
+
+```
+- 4. edit Category(you just call the form):
+  rules:
+    - in form must mention must mention this for old value =>> ```   value="{{ old('name', $category->name) }} ```
