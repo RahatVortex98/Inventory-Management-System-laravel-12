@@ -195,6 +195,120 @@ public function listOfCategory(){
     }
 
 ```
-- 4. edit Category(you just call the form):
+- 4. edit & update Category(you just call the form):
   rules:
     - in form must mention must mention this for old value =>> ```   value="{{ old('name', $category->name) }} ```
+    - Edit and update => edit takes u to the form and update helps u to update your previous data.
+    - Both function has model binding!
+  Controller:
+```
+public function editCategory(Category $category){
+
+      return view('admin.category.edit-category', compact('category'));
+    }
+
+    public function updateCategory(Request $request,Category $category){
+
+        $request->validate([
+            'name'=>'required|string|max:255',
+            'description'=>'string|nullable',
+            'status'=>'boolean|nullable'
+        ]);
+        $category->update([
+            'name'=>$request->name,
+            'description'=>$request->description,
+            'status'=>$request->boolean('status')
+
+        ]);
+        return redirect()->route('admin.categoryList')->with('message','Category Updated');
+
+    }
+
+
+```
+Blade.php:
+
+```
+Edit function:
+ <a href="{{ route('admin.editCategory',$category->id) }}" class="text-blue-600 hover:underline">
+                                Edit
+                            </a>
+Update function:
+ <form method="POST" action="{{ route('admin.updateCategory', $category->id) }}">
+            @csrf
+            @method('PUT')
+
+            <div class="mb-4">
+                <label class="block mb-2">Category Name</label>
+
+                <input
+                    type="text"
+                    name="name"
+                    class="w-full border rounded p-2"
+                    value="{{ old('name', $category->name) }}">
+            </div>
+
+            <div class="mb-4">
+                <label class="block mb-2">Category Description</label>
+
+                <textarea
+                    name="description"
+                    class="w-full border rounded p-2"
+                    rows="4">{{ old('description', $category->description) }}</textarea>
+            </div>
+
+            <div class="mb-4">
+                <label>
+                    <input
+                        type="checkbox"
+                        name="status"
+                        value="1"
+                        {{ old('status', $category->status) ? 'checked' : '' }}>
+
+                    Active
+                </label>
+            </div>
+
+            <button
+                type="submit"
+                class="bg-green-950 text-black px-5 py-2 rounded">
+                Update Category
+            </button>
+        </form>
+```
+web.php:
+
+```
+Route::get('/edit-category/{category}',[AdminDashboardController::class,'editCategory'])->name('editCategory');
+Route::put('/update-category/{category}',[AdminDashboardController::class,'updateCategory'])->name('updateCategory');
+
+```
+
+5. Destroy category:
+Controller :
+```
+ public function destroyCategory(Category $category){
+        $category->delete();
+        return redirect()->route('admin.categoryList')->with('message','Deleted');
+    }
+```
+Form / blade:
+```
+   <form method="POST" action="{{ route('admin.deleteCategory', $category->id) }}">
+                            @csrf
+                            @method('DELETE')
+
+                            <button
+                                type="submit"
+                                class="text-red-600 hover:underline"
+                                onclick="return confirm('Are you sure you want to delete this category?')">
+                                Delete
+                            </button>
+                        </form>
+
+```
+
+web.php:
+```
+Route::delete('/delete-category/{category}',[AdminDashboardController::class,'destroyCategory'])->name('deleteCategory');
+```
