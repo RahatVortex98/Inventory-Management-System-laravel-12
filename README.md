@@ -396,8 +396,62 @@ brandStore  =>  * Store a new brand.
 brandEdit   =>  * Show edit form.
 brandUpdate =>  * Update brand.
 
-brandStore(form like this beacuse we have realtion between brand and category!)
+brandStore(form like this beacuse we have realtion between brand and category!):
+to select category then make them to brand's we can write like this so they associated like this:
+```
+<select name="category_id" class="w-full border rounded p-2">
+                <option value="">-- Select Category --</option>
 
+                @foreach ($categories as $category)
+                    <option
+                        value="{{ $category->id }}"
+                        {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                @endforeach
+            </select>
+
+```
+message / success handling:
+```
+ @error('category_id')
+                <p class="text-red-500 text-sm">{{ $message }}</p>
+            @enderror
+```
+brandUpdate:
+for showing old data:
+option section:
+```
+<option
+    value="{{ $category->id }}"
+    {{ old('category_id', $brand->category_id) == $category->id ? 'selected' : '' }}>
+    {{ $category->name }}
+</option>
+
+```
+
+checkbox section:
+```
+<input
+    type="checkbox"
+    name="status"
+    value="1"
+    {{ old('status', $brand->status) ? 'checked' : '' }}>
+```
+USe this if u want to inactive any update:
+```
+<input type="hidden" name="status" value="0">
+
+<label class="inline-flex items-center">
+    <input
+        type="checkbox"
+        name="status"
+        value="1"
+        {{ old('status', $brand->status) ? 'checked' : '' }}>
+
+    <span class="ml-2">Active</span>
+</label>
+```
 > ⚠️ **Missing route spotted:** your `addCategory()` and `editCategory()` views submit to `storeCategory` and `listOfCategory`, but no routes for those two were defined anywhere in the original notes. Add these to `web.php` so the module actually works end-to-end:
 > ```php
 > Route::post('/store-category', [AdminDashboardController::class, 'storeCategory'])->name('storeCategory');
