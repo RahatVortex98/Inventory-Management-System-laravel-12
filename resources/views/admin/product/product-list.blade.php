@@ -108,8 +108,13 @@
                             @endif
 
                         </td>
-
-                       
+                        <td class="border px-3 py-2 {{ $product->current_stock <= $product->reorder ? 'text-red-600 font-bold' : '' }}">
+                        {{ $product->current_stock }}
+                        @if($product->current_stock <= $product->reorder)
+                            <span class="text-xs">(low)</span>
+                        @endif
+                    </td>
+                                        
 
                         <td class="border px-3 py-2">
 

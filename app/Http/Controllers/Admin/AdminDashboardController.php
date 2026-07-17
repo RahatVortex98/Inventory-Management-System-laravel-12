@@ -11,9 +11,14 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 class AdminDashboardController extends Controller
 {
-    public function index(){
-        return view('admin.admin-dashboard');
-    }
+   public function index(){
+    $todaySales = \App\Models\Sale::whereDate('created_at', today())->count();
+    $todayRevenue = \App\Models\Sale::whereDate('created_at', today())->sum('total_amount');
+    $lowStockProducts = Product::whereColumn('current_stock', '<=', 'reorder')->where('status', 1)->get();
+    $recentSales = \App\Models\Sale::with('user')->latest()->take(5)->get();
+
+    return view('admin.admin-dashboard', compact('todaySales', 'todayRevenue', 'lowStockProducts', 'recentSales'));
+}
 
     public function addCategory(){
         return view('admin.category.addCategory');
