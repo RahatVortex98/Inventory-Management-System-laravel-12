@@ -3,7 +3,7 @@
 use App\Http\Controllers\Admin\AdminDashboardController;
 
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\User\UserDashboardController;
 
 use Illuminate\Support\Facades\Route;
@@ -14,8 +14,11 @@ Route::get('/', function () {
 
 
 // routes/web.php
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+     Route::get('/sale/create', [UserDashboardController::class, 'saleCreate'])->name('saleCreate');
+    Route::post('/sale/store', [UserDashboardController::class, 'saleStore'])->name('saleStore');
+    Route::get('/sales', [UserDashboardController::class, 'saleList'])->name('saleList');
 });
 
 Route::middleware(['auth', 'admin'])
@@ -50,6 +53,24 @@ Route::middleware(['auth', 'admin'])
     Route::put('/brand/update/{brand}', [AdminDashboardController::class, 'brandUpdate'])->name('brandUpdate');
 
     Route::delete('/brand/delete/{brand}', [AdminDashboardController::class, 'brandDelete'])->name('brandDelete');
+
+
+    Route::get('/products', [AdminDashboardController::class, 'productList'])->name('productList');
+
+    Route::get('/product/create', [AdminDashboardController::class, 'productCreate'])->name('productCreate');
+    Route::post('/product/store', [AdminDashboardController::class, 'productStore'])->name('productStore');
+
+    Route::get('/product/edit/{product}', [AdminDashboardController::class, 'productEdit'])->name('productEdit');
+    Route::put('/product/update/{product}', [AdminDashboardController::class, 'productUpdate'])->name('productUpdate');
+
+    Route::delete('/product/delete/{product}', [AdminDashboardController::class, 'productDelete'])->name('productDelete');
+    
+    // inside the existing admin group, after products
+    Route::get('/purchases', [PurchaseController::class, 'purchaseList'])->name('purchaseList');
+    Route::get('/purchase/create', [PurchaseController::class, 'purchaseCreate'])->name('purchaseCreate');
+    Route::post('/purchase/store', [PurchaseController::class, 'purchaseStore'])->name('purchaseStore');
+    
+    
     });
 
 

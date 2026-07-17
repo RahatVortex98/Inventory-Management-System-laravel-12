@@ -12,11 +12,16 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('user.dashboard')" :active="request()->routeIs('user.dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                  
-                </div>
+    <x-nav-link :href="route('user.dashboard')" :active="request()->routeIs('user.dashboard')">
+        {{ __('Dashboard') }}
+    </x-nav-link>
+    <x-nav-link :href="route('user.saleCreate')" :active="request()->routeIs('user.saleCreate')">
+        {{ __('New Sale') }}
+    </x-nav-link>
+    <x-nav-link :href="route('user.saleList')" :active="request()->routeIs('user.saleList')">
+        {{ __('My Sales') }}
+    </x-nav-link>
+</div>
             </div>
 
             <!-- Settings Dropdown -->

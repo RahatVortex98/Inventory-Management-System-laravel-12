@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\Suppliers;
 use Illuminate\Http\Request;
-
+use Illuminate\Validation\Rule;
 class AdminDashboardController extends Controller
 {
     public function index(){
@@ -164,4 +165,81 @@ class AdminDashboardController extends Controller
         
         }   
 
+
+
+
+
+       public function productList(){
+        $products=Product::with(['category','supplier','brand'])->latest()->paginate(10);
+        return view('admin.product.product-list',compact('products'));
+       } 
+       
+
+       public function productCreate(){
+        $categories = Category::where('status',1)->get();
+        $suppliers = Suppliers::where('status',1)->get();
+        $brands = Brand::where('status',1)->get();
+        return view('admin.product.product-create',compact('categories','suppliers','brands'));
+       }
+
+        public function productStore(Request $request,Product $product){
+            $attr=$request->validate([
+
+            'category_id' => 'required|exists:categories,id',
+            'supplier_id' => 'required|exists:suppliers,id',
+            'brand_id'    => 'required|exists:brands,id',
+            'name'=>'required|string|max:255',
+             'sku' => [
+                'required',
+                'string',
+                Rule::unique('products')->ignore($product->id),
+            ],
+            'unit'=>'required|string|max:20',
+            'cost_price' => 'required|numeric|min:0',
+            'selling_price' => 'required|numeric|min:0',
+            'current_stock'=>'nullable|integer|min:0',
+            'reorder' => 'nullable|integer|min:0',
+            'status' => 'nullable|boolean',
+
+
+            ]);
+             $attr['status'] = $request->boolean('status');
+             Product::create($attr);
+             return redirect()->route('admin.productList');
+        }
+
+        public function productEdit(Product $product){
+            $categories=Category::where('status',1)->get();
+            $brands=Brand::where('status',1)->get();
+            $suppliers=Suppliers::where('status',1)->get();
+
+            return view('admin.product.product-edit',compact('product','categories','brands','suppliers'));
+        }
+
+        public function productUpdate(Request $request,Product $product){
+            $attr=$request->validate([
+
+            'category_id' => 'required|exists:categories,id',
+            'supplier_id' => 'required|exists:suppliers,id',
+            'brand_id'    => 'required|exists:brands,id',
+            'name'=>'required|string|max:255',
+            'sku' => [
+                'required',
+                'string',
+                Rule::unique('products')->ignore($product->id),
+            ],
+            'unit'=>'required|string|max:20',
+            'cost_price' => 'required|numeric|min:0',
+            'selling_price' => 'required|numeric|min:0',
+            'current_stock'=>'nullable|integer|min:0',
+            'reorder' => 'nullable|integer|min:0',
+            'status' => 'nullable|boolean',
+
+
+        ]);
+        $attr['status']=$request->boolean('status');
+        $product->update($attr);
+         return redirect()->route('admin.productList');
+
     }
+}

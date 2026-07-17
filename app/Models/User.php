@@ -24,7 +24,9 @@ class User extends Authenticatable
         'password',
         'role',
     ];
-
+    public function stockmovements(){
+        return $this->hasMany(StockMovement::class);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
