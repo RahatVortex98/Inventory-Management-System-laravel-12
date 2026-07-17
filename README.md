@@ -452,6 +452,49 @@ USe this if u want to inactive any update:
     <span class="ml-2">Active</span>
 </label>
 ```
+Product section model controller and database:
+
+in controller while store or update if there any foreignId avaiable:
+```
+'category_id' => 'required|exists:categories,id',
+'supplier_id' => 'required|exists:suppliers,id',
+'brand_id'    => 'required|exists:brands,id',
+```
+if u made column name with decimal write like this in controller:
+
+```
+'cost_price' => 'required|numeric|min:0',
+'selling_price' => 'required|numeric|min:0'
+
+```
+sku type column like this:
+
+```
+use Illuminate\Validation\Rule;
+
+'sku' => [
+    'required',
+    'string',
+    Rule::unique('products')->ignore($product->id),
+],
+
+```
+Status like column mentioned like this:
+
+```
+$attr['status'] = $request->boolean('status');
+```
+StockMovement (no CRUD screens — created automatically by Purchase/Sale):
+the physical and digital tracking of goods as they flow through your supply chain
+Only model and database we need:
+
+```
+php artisan make:model StockMovement -m
+```
+Purchase + PurchaseItem:Admin/staff(user) receiving stock from Supplier:
+
+
+
 > ⚠️ **Missing route spotted:** your `addCategory()` and `editCategory()` views submit to `storeCategory` and `listOfCategory`, but no routes for those two were defined anywhere in the original notes. Add these to `web.php` so the module actually works end-to-end:
 > ```php
 > Route::post('/store-category', [AdminDashboardController::class, 'storeCategory'])->name('storeCategory');
